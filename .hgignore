@@ -1,0 +1,5 @@
+syntax: glob
+lcd-screen.svg
+lcdDraw.svg
+lcdIcon.svg
+lcdPCB.svg
