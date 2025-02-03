@@ -88,12 +88,29 @@ unsigned long blueTime;
 unsigned long iZoneTime;
 byte team=0;
 
+
+// Tension batterie
+const int pinBatterie = 34;  // Pin GPIO 34 pour mesurer la tension de la batterie (ADC)
+const float R1 = 100000.0;   // 100kΩ
+const float R2 = 100000.0;   // 100kΩ
+const float Vref = 3.6;      // Tension de référence (3.6V sur ESP32)
+const float Vmax = 4.2;      // Tension pleine charge
+const float Vmin = 3.3;      // Tension minimale
+
+
 void setup(){
   strip.begin(); // Initialise le strip
   setColor(strip.Color(0, 0, 0)); // Éteint toutes les LEDs
   strip.show();  // Met à jour le strip (pour s'assurer qu'il est éteint au départ)
-  lcd.begin(16, 2);
+
   Serial.begin(115200);
+
+ // Calibration ADC pour éviter les erreurs
+  analogSetPinAttenuation(pinBatterie, ADC_11db); // Permet de lire jusqu'à 3.6V
+  analogReadResolution(12);  // Résolution ADC sur 12 bits (0-4095)
+
+  lcd.begin(16, 2);
+
   //  lcd.init();                      
   //  lcd.backlight();
   lcd.setCursor(3,0);

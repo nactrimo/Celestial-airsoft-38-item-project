@@ -72,7 +72,7 @@ void domination(){
       }
     }
 
-    //###########################CHECKINGS##################
+ //###########################CHECKINGS##################
 
     //Check If Game End
     if(minutos-aTime/60000==0 && 59-((aTime/1000)%60)==0)
@@ -220,38 +220,52 @@ void gameOver(){
   if(team==1)blueTime+=millis()-iZoneTime;
   if(team==2)redTime+=millis()-iZoneTime;
   
-  while(!isPressed('0')){
+while (!isPressed('0')) {
     lcd.clear();
-    lcd.setCursor(3,0);
+    lcd.setCursor(3, 0);
     lcd.print("TIME OVER!");   
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
 
-    //check who team win the base
-    if(blueTime>redTime){
-      //blueteam wins
-      lcd.print(" BLUE TEAM WIN ");
-      setColor(strip.Color(0, 0, 255)); // Bleu 
+    // check who team wins the base
+    if (blueTime > redTime) {
+        // blue team wins
+        lcd.print(" BLUE TEAM WIN ");
+        setColor(strip.Color(0, 0, 255)); // Blue 
     }
-    else{
-      //redteam wins 
-      lcd.print(" RED TEAM WIN ");
-      setColor(strip.Color(255, 0, 0)); // Rouge
+    else {
+        // red team wins 
+        lcd.print(" RED TEAM WIN ");
+        setColor(strip.Color(255, 0, 0)); // Red
     }
     delay(3000);
+
+    if (isPressed('0')) { // Check if button '0' is pressed to break the loop
+        break;
+    }
+
     cls();
     lcd.print("Red Time:");
-    lcd.setCursor(5,1);
-    printTimeDom(redTime,false);
-    delay(3000);
-    cls();
-    lcd.print("Blue Time:");
-    lcd.setCursor(5,1);
-    printTimeDom(blueTime,false);
-    Serial.println("check");   
-     
+    lcd.setCursor(5, 1);
+    printTimeDom(redTime, false);
     delay(3000);
 
-  }
+    if (isPressed('0')) { // Check if button '0' is pressed to break the loop
+        break;
+    }
+
+    cls();
+    lcd.print("Blue Time:");
+    lcd.setCursor(5, 1);
+    printTimeDom(blueTime, false);
+    Serial.println("check");   
+
+    delay(3000);
+
+    if (isPressed('0')) { // Check if button '0' is pressed to break the loop
+        break;
+    }
+}
+
 
 
   cls();

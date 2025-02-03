@@ -24,7 +24,7 @@ void menuPrincipal(){   //MAIN MENU
 
     var = keypad.waitForKey();
     if(var == BT_UP && i>0){
-      tone(tonepin,2400,30);
+      tone(tonepin,2400,100);
       i--;
       cls();
       lcd.print(menu1[i]);
@@ -32,7 +32,7 @@ void menuPrincipal(){   //MAIN MENU
       delay(100);
     }
     if(var == BT_DOWN && i<3){
-      tone(tonepin,2400,30);
+      tone(tonepin,2400,100);
       i++;
       cls(); 
       lcd.print(menu1[i]);    
@@ -42,7 +42,7 @@ void menuPrincipal(){   //MAIN MENU
     }
 
     if(var == BT_SEL){
-      tone(tonepin,2400,30);
+      tone(tonepin,2400,100);
       cls();
       switch (i){
 
@@ -80,7 +80,7 @@ void config(){
   lcd.setCursor(0, 0);
   int i=0;
   char* menu2[]={
-    "GAME CONFIG","MOSFET TEST", "PATCH LED","...vide..."}; // HERE YOU CAN ADD MORE ITEMS ON THE MENU
+    "GAME CONFIG","MOSFET TEST", "PATCH LED","V BATT"}; // HERE YOU CAN ADD MORE ITEMS ON THE MENU
   delay(500);
   lcd.print(menu2[i]);
   checkArrows(i,3);
@@ -88,7 +88,7 @@ void config(){
   while(1){
     var=keypad.waitForKey();
     if(var == BT_UP && i>0){
-      tone(tonepin,2400,30);
+      tone(tonepin,2400,100);
       i--;
       lcd.clear();  
       lcd.print(menu2[i]);
@@ -97,7 +97,7 @@ void config(){
 
     }
     if(var == BT_DOWN && i<3){
-      tone(tonepin,2400,30);
+      tone(tonepin,2400,100);
       i++;
       lcd.clear();  
       lcd.print(menu2[i]);
@@ -105,11 +105,11 @@ void config(){
       delay(50);
     }
     if(var == BT_CANCEL){
-      tone(tonepin,2400,30);
+      tone(tonepin,2400,100);
       menuPrincipal();
     }
     if(var == BT_SEL){
-      tone(tonepin,2400,30);
+      tone(tonepin,2400,100);
       lcd.clear();
       switch (i){
 
@@ -157,10 +157,38 @@ void config(){
         break;     
 
       case 3:
-      //VIDE
-        cls();
-        lcd.print("VIDE!");
-        delay(2000);
+      //Test tension batterie
+       cls();
+
+
+        // Lire plusieurs fois et faire une moyenne
+        float sommeADC = 0;
+        int nbMesures = 60;  // Nombre de lectures pour la moyenne
+        for (int i = 0; i < nbMesures; i++) {
+        sommeADC += analogRead(pinBatterie);
+        delay(15);  // Petite pause pour éviter le bruit
+        }
+        float valeurADC = sommeADC / nbMesures;
+
+        // Conversion ADC → tension lue
+        float tensionLue = valeurADC * (Vref / 4095.0);  
+
+        // Calcul de la tension réelle de la batterie
+        float tensionBatterie = tensionLue * (R1 + R2) / R2;  
+
+        // Calcul du pourcentage de batterie
+        int pourcentage = (tensionBatterie - Vmin) / (Vmax - Vmin) * 100;
+        if (pourcentage > 100) pourcentage = 100;
+        if (pourcentage < 0) pourcentage = 0;
+
+        // Afficher la tension lue
+        lcd.setCursor(0,0);
+        lcd.print("Batterie:" + String(tensionBatterie) + "V");
+        Serial.print("Tension Batterie: ");
+        lcd.setCursor(0,1);
+        lcd.print("Charge:" + String(pourcentage) + "%");
+
+        delay(3000);
         config();
         break;    
 
@@ -168,6 +196,9 @@ void config(){
     }
   }
 }
+
+
+
 
 void configQuickGame(){
 
@@ -189,18 +220,18 @@ void configQuickGame(){
       var = keypad.waitForKey();
 
       if(var == 'a' && GAMEMINUTES<180){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         GAMEMINUTES++;
         delay(50);
       }
       if(var == 'b' && GAMEMINUTES>1){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         GAMEMINUTES--;
         delay(50);
       }
       if(var == 'c') // Cancel or Back Button :')
       {
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         sdStatus = false; //search and destroy game enable used in config
         saStatus = false; //same but SAbotaghe
         doStatus = false; //for DEmolition
@@ -208,11 +239,11 @@ void configQuickGame(){
       } 
       if(var == 'd') // Cancel or Back Button :')
       {
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         break;
       }        
     }
-    tone(tonepin,2400,30);
+    tone(tonepin,2400,100);
     cls();
   }
   //BOMB TIME
@@ -230,18 +261,18 @@ void configQuickGame(){
 
 
       if(var == 'b' && BOMBMINUTES>1){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         BOMBMINUTES--;
         delay(50);
       }
       if(var == 'a' && BOMBMINUTES<20){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         BOMBMINUTES++;
         delay(50);
       }
       if(var == 'c') // Cancel or Back Button :')
       {
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         sdStatus = false; //search and destroy game enable used in config
         saStatus = false; //same but SAbotaghe
         doStatus = false; //for DEmolition
@@ -249,11 +280,11 @@ void configQuickGame(){
       } 
       if(var == 'd') // Cancel or Back Button :')
       {
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         break;
       }          
     }
-    tone(tonepin,2400,30);
+    tone(tonepin,2400,100);
   }
   cls();
   //ARMING TIME
@@ -270,18 +301,18 @@ void configQuickGame(){
       var = keypad.waitForKey();
       
       if(var == 'b' && ACTIVATESECONDS>5){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         ACTIVATESECONDS--;
         delay(50);
       }   
       if(var == 'a' && ACTIVATESECONDS<30){
         ACTIVATESECONDS++;
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         delay(50);
       }
       if(var == 'c') // Cancel or Back Button :')
       {
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         sdStatus = false; //search and destroy game enable used in config
         saStatus = false; //same but SAbotaghe
         doStatus = false; //for DEmolition
@@ -289,11 +320,11 @@ void configQuickGame(){
       } 
       if(var == 'd') // Cancel or Back Button :')
       {
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         break;
       }     
     }
-    tone(tonepin,2400,30);
+    tone(tonepin,2400,100);
     ACTIVATESECONDS-=1; // Just a fix
 
   }
@@ -310,13 +341,13 @@ void configQuickGame(){
       var = keypad.waitForKey();
       if(var == 'a' ){
         soundEnable=true;
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         break;
       }  
 
       if(var == 'b' ){
         soundEnable=false;
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         break;
       }  
     }
@@ -333,12 +364,12 @@ void configQuickGame(){
       var = keypad.waitForKey();
       if(var == 'a' ){
         mosfetEnable=true;
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         break;
       }  
       if(var == 'b' ){
         mosfetEnable=false;
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         break;
       }  
     } 
@@ -354,18 +385,18 @@ void configQuickGame(){
     {
       var = keypad.waitForKey();
       if(var == 'a' ){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         setNewPass();
         passwordEnable = true;
         break;
       }  
       if(var == 'b' ){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         passwordEnable = false;
         break;
       }  
     } 
-    tone(tonepin,2400,30);
+    tone(tonepin,2400,100);
   }  
 
   //Multiple site
@@ -384,18 +415,18 @@ void configQuickGame(){
 
 
       if(var == 'b' && NBSITE>1){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         NBSITE--;
         delay(50);
       }
       if(var == 'a' && NBSITE<10){
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         NBSITE++;
         delay(50);
       }
       if(var == 'c') // Cancel or Back Button :')
       {
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         sdStatus = false; //search and destroy game enable used in config
         saStatus = false; //same but SAbotaghe
         doStatus = false; //for DEmolition
@@ -403,11 +434,11 @@ void configQuickGame(){
       } 
      if( var == 'd') // Cancel or Back Button :')
       {
-        tone(tonepin,2400,30);
+        tone(tonepin,2400,100);
         break;
       }          
     }
-    tone(tonepin,2400,30);
+    tone(tonepin,2400,100);
   } 
   //Continue the game :D
 }
