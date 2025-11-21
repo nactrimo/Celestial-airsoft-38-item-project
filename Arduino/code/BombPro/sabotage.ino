@@ -1,7 +1,7 @@
 void sabotage(){
   cls();
-  digitalWrite(REDLED, HIGH); 
-  digitalWrite(GREENLED, HIGH);  
+  safeDigitalWrite(REDLED, HIGH); 
+  safeDigitalWrite(GREENLED, HIGH);  
   setColor(strip.Color(255, 255, 0)); 
   //SETUP INITIAL TIME 
   int minutos = GAMEMINUTES-1;
@@ -21,11 +21,11 @@ void sabotage(){
     timeCalcVar=(millis()- iTime)%1000;
     if(timeCalcVar >= 0 && timeCalcVar <= 50)
     {
-      digitalWrite(GREENLED, LOW);  
+      safeDigitalWrite(GREENLED, LOW);  
     }
     if(timeCalcVar >= 90 && timeCalcVar <= 130)
     {    
-      digitalWrite(GREENLED, HIGH);  
+      safeDigitalWrite(GREENLED, HIGH);  
     }
 
     lcd.setCursor(3,0);
@@ -88,7 +88,7 @@ void sabotage(){
     {
       keypad.getKey();
       cls();
-      digitalWrite(GREENLED, HIGH);
+      safeDigitalWrite(GREENLED, HIGH);
       lcd.clear();
       lcd.setCursor(2,0);
       lcd.print("ARMING BOMB");
@@ -102,13 +102,13 @@ void sabotage(){
 
         if( timeCalcVar >= 0 && timeCalcVar <= 40)
         {
-          digitalWrite(REDLED, LOW);  
+          safeDigitalWrite(REDLED, LOW);  
           if(soundEnable)tone(tonepin,tonoAlarma1,200);
         }
         if(timeCalcVar >= 480 && timeCalcVar <= 520)
         {
           if(soundEnable)tone(tonepin,tonoAlarma2,200);
-          digitalWrite(REDLED, HIGH);
+          safeDigitalWrite(REDLED, HIGH);
         }
         unsigned long seconds= millis() - xTime;
         percent = (seconds)/(ACTIVATESECONDS*10);
@@ -116,12 +116,12 @@ void sabotage(){
 
         if(percent >= 100)
         {
-          digitalWrite(GREENLED, HIGH);
+          safeDigitalWrite(GREENLED, HIGH);
           destroySabotage();// jump to the next gamemode
         }
       }
       cls();
-      digitalWrite(REDLED, HIGH);  
+      safeDigitalWrite(REDLED, HIGH);  
     }
   }
 }
@@ -150,11 +150,11 @@ void destroySabotage(){
     timeCalcVar=(millis()- iTime)%1000;
     if(timeCalcVar >= 0 && timeCalcVar <= 40)
     {
-      digitalWrite(REDLED, LOW);  
+      safeDigitalWrite(REDLED, LOW);  
       if(soundEnable)tone(tonepin,tonoActivada,largoTono);
     }
     if(timeCalcVar >= 180 && timeCalcVar <= 220){
-      digitalWrite(REDLED, HIGH); 
+      safeDigitalWrite(REDLED, HIGH); 
     }
     //Sound 
 
@@ -206,8 +206,8 @@ void destroySabotage(){
     if('d' == keypad.getKey() && passwordEnable){
 
       cls();
-      digitalWrite(REDLED, HIGH);  
-      digitalWrite(GREENLED, LOW); 
+      safeDigitalWrite(REDLED, HIGH);  
+      safeDigitalWrite(GREENLED, LOW); 
       lcd.print(" DISARMING BOMB");
       delay(1000);//a little delay to think in the password
 
@@ -233,7 +233,7 @@ void destroySabotage(){
     if(defuseando && !passwordEnable)// disarming bomb
     {
       lcd.clear();
-      digitalWrite(REDLED, HIGH);
+      safeDigitalWrite(REDLED, HIGH);
       lcd.setCursor(3,0);
       lcd.print("DISARMING");
       lcd.setCursor(0,1);
@@ -250,13 +250,13 @@ void destroySabotage(){
         timeCalcVar=(millis()- xTime)%1000;
         if(timeCalcVar>= 0 && timeCalcVar <= 20)
         {
-          digitalWrite(GREENLED, LOW);  
+          safeDigitalWrite(GREENLED, LOW);  
           if(soundEnable)tone(tonepin,tonoAlarma1,200);
         }
         if(timeCalcVar >= 480 && timeCalcVar <= 500)
         {
           if(soundEnable)tone(tonepin,tonoAlarma2,200);
-          digitalWrite(GREENLED, HIGH);  
+          safeDigitalWrite(GREENLED, HIGH);  
         }
         unsigned long seconds=(millis()- xTime);
         percent= seconds/(ACTIVATESECONDS*10);
@@ -268,8 +268,8 @@ void destroySabotage(){
           sabotage();   
         }
       }
-      digitalWrite(REDLED, HIGH); 
-      digitalWrite(GREENLED, HIGH);
+      safeDigitalWrite(REDLED, HIGH); 
+      safeDigitalWrite(GREENLED, HIGH);
       cls(); 
     }
   }

@@ -1,7 +1,7 @@
 void search(){
   cls();
-  digitalWrite(REDLED, HIGH); 
-  digitalWrite(GREENLED, HIGH); 
+  safeDigitalWrite(REDLED, HIGH); 
+  safeDigitalWrite(GREENLED, HIGH); 
 
 
   //SETUP INITIAL TIME 
@@ -16,13 +16,13 @@ void search(){
     timeCalcVar=(millis()- iTime)%1000;
     if(timeCalcVar >= 0 && timeCalcVar <= 50)
     {
-      digitalWrite(GREENLED, LOW);  
+      safeDigitalWrite(GREENLED, LOW);  
 
 
     }
     if(timeCalcVar >= 90 && timeCalcVar <= 130)
     {    
-      digitalWrite(GREENLED, HIGH);  
+      safeDigitalWrite(GREENLED, HIGH);  
 
 
     }
@@ -107,7 +107,7 @@ void search(){
     //Check If Is Activating
     while(defuseando && !passwordEnable)
     {
-      digitalWrite(GREENLED, HIGH);
+      safeDigitalWrite(GREENLED, HIGH);
       
 
       lcd.clear();
@@ -123,14 +123,14 @@ void search(){
 
         if( timeCalcVar >= 0 && timeCalcVar <= 40)
         {
-          digitalWrite(REDLED, LOW);  
+          safeDigitalWrite(REDLED, LOW);  
 
           if(soundEnable)tone(tonepin,tonoAlarma1,200);
         }
         if(timeCalcVar >= 480 && timeCalcVar <= 520)
         {
           if(soundEnable)tone(tonepin,tonoAlarma2,200);
-          digitalWrite(REDLED, LOW);
+          safeDigitalWrite(REDLED, LOW);
 
         }
 
@@ -140,13 +140,13 @@ void search(){
 
         if(percent >= 100)
         {
-          digitalWrite(GREENLED, HIGH);
+          safeDigitalWrite(GREENLED, HIGH);
 
           destroy();// jump to the next gamemode
         }
       }
       cls();
-      digitalWrite(REDLED, HIGH); 
+      safeDigitalWrite(REDLED, HIGH); 
 
 
     }
@@ -178,12 +178,12 @@ void destroy(){
     timeCalcVar=(millis()- iTime)%1000;
     if(timeCalcVar >= 0 && timeCalcVar <= 40)
     {
-      digitalWrite(REDLED, LOW);  
+      safeDigitalWrite(REDLED, LOW);  
 
       if(soundEnable)tone(tonepin,tonoActivada,largoTono);
     }
     if(timeCalcVar >= 180 && timeCalcVar <= 220){
-      digitalWrite(REDLED, HIGH);
+      safeDigitalWrite(REDLED, HIGH);
 
     }
     //Sound 
@@ -244,7 +244,7 @@ void destroy(){
     if(defuseando && !passwordEnable)// disarming bomb
     {
       lcd.clear();
-      digitalWrite(REDLED, HIGH);  
+      safeDigitalWrite(REDLED, HIGH);  
 
       lcd.setCursor(0,0);
       lcd.print(" DESARMOSAGE ");
@@ -262,7 +262,7 @@ void destroy(){
         timeCalcVar=(millis()- xTime)%1000;
         if(timeCalcVar>= 0 && timeCalcVar <= 20)
         {
-          digitalWrite(GREENLED, LOW); 
+          safeDigitalWrite(GREENLED, LOW); 
 
 
           if(soundEnable)tone(tonepin,tonoAlarma1,200);
@@ -270,7 +270,7 @@ void destroy(){
         if(timeCalcVar >= 480 && timeCalcVar <= 500)
         {
           if(soundEnable)tone(tonepin,tonoAlarma2,200);
-          digitalWrite(GREENLED, HIGH);
+          safeDigitalWrite(GREENLED, HIGH);
 
 
         }
@@ -284,8 +284,8 @@ void destroy(){
           disarmedSplash();   
         }
       }
-      digitalWrite(REDLED, HIGH); 
-      digitalWrite(GREENLED, HIGH);
+      safeDigitalWrite(REDLED, HIGH); 
+      safeDigitalWrite(GREENLED, HIGH);
       cls();
     }
   }

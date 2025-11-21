@@ -1,7 +1,6 @@
-#include <Wire.h> 
+#include <Wire.h>
 #include <Keypad.h>
-//#include <LiquidCrystal_I2C.h>
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_I2C.h>
 #include <Adafruit_NeoPixel.h>
 
 
@@ -11,7 +10,9 @@
 #define NUM_LEDS 32
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-LiquidCrystal lcd(13, 12, 14, 27, 26, 25);
+// Initialisation LCD I2C (adresse 0x27, 16 colonnes, 2 lignes)
+// Si l'écran ne fonctionne pas, essayez l'adresse 0x3F
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 const byte ROWS = 4;
 const byte COLS = 4; 
 char keys[ROWS][COLS] = {
@@ -20,8 +21,8 @@ char keys[ROWS][COLS] = {
   {'7','8','9','c'},
   {'*','0','#','d'}
 };
-byte rowPins[ROWS] = {15, 4, 16, 17}; 
-byte colPins[COLS] = {5, 18, 19, 21};
+byte rowPins[ROWS] = {15, 4, 16, 17};
+byte colPins[COLS] = {5, 18, 19, 25}; 
 
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
@@ -46,12 +47,16 @@ char BT_CANCEL = 'c';
 char BT_DEFUSER = 'x';   // not implemented
 
 //leds
+// Si vous n'avez pas de LEDs physiques, laissez à -1 pour les désactiver
+// Sinon, utilisez des GPIOs libres comme 2, 23, etc.
+const int REDLED = -1;    // Désactivé (était 0, pin de boot)
+const int GREENLED = -1;  // Désactivé (était 0, pin de boot)
 
-const int REDLED = 0;
-const int GREENLED = 0;
+// Macros pour digitalWrite sécurisé (vérifie si pin est valide)
+#define safeDigitalWrite(pin, value) if((pin) >= 0) digitalWrite((pin), (value))
 
 boolean mosfetEnable = false;
-const int mosfet = 22;
+const int mosfet = 23;  // Changé de 22 à 23 (22 = I2C SCL, CONFLIT!)
 //IS VERY IMPORTANT THAT YOU TEST THIS TIME. BY DEFAULT IS IN 1 SEC. THAT IS NOT TOO MUCH. SO TEST IT!
 const int MOSFET_TIME = 15000;
 
@@ -89,42 +94,45 @@ unsigned long iZoneTime;
 byte team=0;
 
 
-// Tension batterie
-const int pinBatterie = 34;  // Pin GPIO 34 pour mesurer la tension de la batterie (ADC)
-const float R1 = 100000.0;   // 100kΩ
-const float R2 = 100000.0;   // 100kΩ
-const float Vref = 3.6;      // Tension de référence (3.6V sur ESP32)
-const float Vmax = 4.2;      // Tension pleine charge
-const float Vmin = 3.3;      // Tension minimale
-
-
 void setup(){
+  Serial.begin(115200);
+  delay(1000);
+  Serial.println("=== DEMARRAGE ===");
+
+  Serial.println("Init Strip LED...");
   strip.begin(); // Initialise le strip
   setColor(strip.Color(0, 0, 0)); // Éteint toutes les LEDs
   strip.show();  // Met à jour le strip (pour s'assurer qu'il est éteint au départ)
+  Serial.println("Strip LED OK");
 
-  Serial.begin(115200);
+  Serial.println("Init LCD I2C...");
+  // Initialisation de l'écran LCD I2C
+  lcd.init();
+  lcd.backlight();
+  Serial.println("LCD init OK");
 
- // Calibration ADC pour éviter les erreurs
-  analogSetPinAttenuation(pinBatterie, ADC_11db); // Permet de lire jusqu'à 3.6V
-  analogReadResolution(12);  // Résolution ADC sur 12 bits (0-4095)
-
-  lcd.begin(16, 2);
-
-  //  lcd.init();                      
-  //  lcd.backlight();
   lcd.setCursor(3,0);
   lcd.print("CELESTIAL");
   lcd.setCursor(4,1);
   lcd.print("AIRSOFT");
+  Serial.println("Affichage LCD OK");
+
+  Serial.println("Config Keypad...");
   keypad.setHoldTime(50);
   keypad.setDebounceTime(50);
   keypad.addEventListener(keypadEvent);
-  delay(3000); 
-  pinMode(GREENLED, OUTPUT);     
-  pinMode(REDLED, OUTPUT); 
-  pinMode(mosfet, OUTPUT);  
-  // 
+  Serial.println("Keypad OK");
+
+  delay(3000);
+
+  Serial.println("Config GPIO...");
+  if (GREENLED >= 0) pinMode(GREENLED, OUTPUT);
+  if (REDLED >= 0) pinMode(REDLED, OUTPUT);
+  pinMode(mosfet, OUTPUT);
+  Serial.println("GPIO OK");
+
+  Serial.println("Creation caracteres LCD...");
+  //
   byte bar1[8] = {
     B10000,
     B10000,
@@ -201,6 +209,9 @@ void setup(){
   lcd.createChar(4,bar5);
   lcd.createChar(5,up);
   lcd.createChar(6,down);
+  Serial.println("Caracteres LCD OK");
+
+  Serial.println("=== SETUP TERMINE ===");
 }
 
 void loop(){
@@ -238,18 +249,18 @@ void keypadEvent(KeypadEvent key){
 
 void disarmedSplash(){
   endGame = false;
-  digitalWrite(REDLED, LOW); 
-  digitalWrite(GREENLED, LOW);
+  safeDigitalWrite(REDLED, LOW);
+  safeDigitalWrite(GREENLED, LOW);
   if(sdStatus || saStatus){
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("BOMBE DESARME");
     lcd.setCursor(0,1);
     lcd.print(" FELICITATION");
-    digitalWrite(GREENLED, LOW);  
-    setColor(strip.Color(0, 255, 0)); 
+    safeDigitalWrite(GREENLED, LOW);
+    setColor(strip.Color(0, 255, 0));
     delay(5000);
-    digitalWrite(GREENLED, HIGH); 
+    safeDigitalWrite(GREENLED, HIGH); 
 
 
   }
@@ -258,8 +269,8 @@ void disarmedSplash(){
   lcd.print("Rejouer?");
   lcd.setCursor(0,1);
   lcd.print("A: Oui    B: Non");
-  digitalWrite(REDLED, HIGH);  
-  digitalWrite(GREENLED, HIGH); 
+  safeDigitalWrite(REDLED, HIGH);
+  safeDigitalWrite(GREENLED, HIGH); 
 
 
   while(1)
@@ -288,8 +299,8 @@ void disarmedSplash(){
 }
 
 void explodeSplash(){
-  digitalWrite(REDLED, HIGH);  
-  digitalWrite(GREENLED, HIGH); 
+  safeDigitalWrite(REDLED, HIGH);
+  safeDigitalWrite(GREENLED, HIGH); 
   setColor(strip.Color(255, 0, 0));
 
 

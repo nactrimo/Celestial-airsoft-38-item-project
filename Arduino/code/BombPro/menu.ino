@@ -2,8 +2,8 @@
 
 void menuPrincipal(){   //MAIN MENU
 
- digitalWrite(GREENLED, HIGH); 
- digitalWrite(REDLED, HIGH); 
+ safeDigitalWrite(GREENLED, HIGH); 
+ safeDigitalWrite(REDLED, HIGH); 
  strip.fill(strip.Color(0, 0, 255), 0, 11);    // Bleu pour les 11 premières LEDs
  strip.fill(strip.Color(255, 255, 255), 11, 11); // Blanc pour les 10 suivantes
  strip.fill(strip.Color(255, 0, 0), 21, 11);    // Rouge pour les 10 dernières
@@ -80,28 +80,28 @@ void config(){
   lcd.setCursor(0, 0);
   int i=0;
   char* menu2[]={
-    "GAME CONFIG","MOSFET TEST", "PATCH LED","V BATT"}; // HERE YOU CAN ADD MORE ITEMS ON THE MENU
+    "GAME CONFIG","MOSFET TEST", "PATCH LED"}; // HERE YOU CAN ADD MORE ITEMS ON THE MENU
   delay(500);
   lcd.print(menu2[i]);
-  checkArrows(i,3);
+  checkArrows(i,2);
 
   while(1){
     var=keypad.waitForKey();
     if(var == BT_UP && i>0){
       tone(tonepin,2400,100);
       i--;
-      lcd.clear();  
+      lcd.clear();
       lcd.print(menu2[i]);
-      checkArrows(i,3);
+      checkArrows(i,2);
       delay(50);
 
     }
-    if(var == BT_DOWN && i<3){
+    if(var == BT_DOWN && i<2){
       tone(tonepin,2400,100);
       i++;
-      lcd.clear();  
+      lcd.clear();
       lcd.print(menu2[i]);
-      checkArrows(i,3);
+      checkArrows(i,2);
       delay(50);
     }
     if(var == BT_CANCEL){
@@ -153,42 +153,6 @@ void config(){
         strip.fill(strip.Color(255, 255, 255), 10, 10); // Blanc pour les 10 suivantes
         strip.fill(strip.Color(255, 0, 0), 20, 10);    // Rouge pour les 10 dernières
         strip.show();
-        config();
-        break;     
-
-      case 3:
-      //Test tension batterie
-       cls();
-
-
-        // Lire plusieurs fois et faire une moyenne
-        float sommeADC = 0;
-        int nbMesures = 60;  // Nombre de lectures pour la moyenne
-        for (int i = 0; i < nbMesures; i++) {
-        sommeADC += analogRead(pinBatterie);
-        delay(15);  // Petite pause pour éviter le bruit
-        }
-        float valeurADC = sommeADC / nbMesures;
-
-        // Conversion ADC → tension lue
-        float tensionLue = valeurADC * (Vref / 4095.0);  
-
-        // Calcul de la tension réelle de la batterie
-        float tensionBatterie = tensionLue * (R1 + R2) / R2;  
-
-        // Calcul du pourcentage de batterie
-        int pourcentage = (tensionBatterie - Vmin) / (Vmax - Vmin) * 100;
-        if (pourcentage > 100) pourcentage = 100;
-        if (pourcentage < 0) pourcentage = 0;
-
-        // Afficher la tension lue
-        lcd.setCursor(0,0);
-        lcd.print("Batterie:" + String(tensionBatterie) + "V");
-        Serial.print("Tension Batterie: ");
-        lcd.setCursor(0,1);
-        lcd.print("Charge:" + String(pourcentage) + "%");
-
-        delay(3000);
         config();
         break;    
 

@@ -22,13 +22,13 @@ void domination(){
     timeCalcVar=(millis()- iTime)%1000;
     if(timeCalcVar >= 0 && timeCalcVar <= 40)
     {
-      if(team==1)digitalWrite(GREENLED, LOW);  
-      if(team==2)digitalWrite(REDLED, LOW); 
+      if(team==1)safeDigitalWrite(GREENLED, LOW);  
+      if(team==2)safeDigitalWrite(REDLED, LOW); 
     }
     if(timeCalcVar >= 50 && timeCalcVar <= 100)
     {    
-      if(team==1)digitalWrite(GREENLED, HIGH);  
-      if(team==2)digitalWrite(REDLED, HIGH);
+      if(team==1)safeDigitalWrite(GREENLED, HIGH);  
+      if(team==2)safeDigitalWrite(REDLED, HIGH);
     }
     // Sound!!! same as Destroy 
     if(timeCalcVar >= 0 && timeCalcVar <= 40 && soundEnable)tone(tonepin,tonoActivada,largoTono);
@@ -100,7 +100,7 @@ void domination(){
         if(timeCalcVar >= 480 && timeCalcVar <= 500)
         {
           if(soundEnable)tone(tonepin,tonoAlarma2,200);
-          digitalWrite(REDLED, HIGH);
+          safeDigitalWrite(REDLED, HIGH);
         }
 
         unsigned long seconds= millis() - xTime;
@@ -143,13 +143,13 @@ void domination(){
 
         if( timeCalcVar >= 0 && timeCalcVar <= 20)
         {
-          digitalWrite(REDLED, LOW);  
+          safeDigitalWrite(REDLED, LOW);  
           if(soundEnable)tone(tonepin,tonoAlarma1,200);
         }
         if(timeCalcVar >= 480 && timeCalcVar <= 500)
         {
           if(soundEnable)tone(tonepin,tonoAlarma2,200);
-          digitalWrite(REDLED, HIGH);
+          safeDigitalWrite(REDLED, HIGH);
         }
 
         unsigned long seconds= millis() - xTime;
@@ -158,7 +158,7 @@ void domination(){
 
         if(percent >= 100)
         {
-          digitalWrite(GREENLED, HIGH);
+          safeDigitalWrite(GREENLED, HIGH);
 
           team=2;
           iZoneTime=millis();
@@ -167,7 +167,7 @@ void domination(){
         }
       }
       cls();
-      digitalWrite(REDLED, HIGH);
+      safeDigitalWrite(REDLED, HIGH);
 
     }
 
@@ -186,13 +186,13 @@ void domination(){
 
         if( timeCalcVar >= 0 && timeCalcVar <= 20)
         {
-          digitalWrite(GREENLED, LOW);  
+          safeDigitalWrite(GREENLED, LOW);  
           if(soundEnable)tone(tonepin,tonoAlarma1,200);
         }
         if(timeCalcVar >= 480 && timeCalcVar <= 500)
         {
           if(soundEnable)tone(tonepin,tonoAlarma2,200);
-          digitalWrite(GREENLED, HIGH);
+          safeDigitalWrite(GREENLED, HIGH);
         }
 
         unsigned long seconds= millis() - xTime;
@@ -201,7 +201,7 @@ void domination(){
 
         if(percent >= 100)
         {
-          digitalWrite(GREENLED, HIGH);
+          safeDigitalWrite(GREENLED, HIGH);
           team=1;
           iZoneTime=millis();
           delay(1000);
@@ -209,7 +209,7 @@ void domination(){
         }
       }
       cls();
-      digitalWrite(GREENLED, HIGH);  
+      safeDigitalWrite(GREENLED, HIGH);  
 
     }
   }
